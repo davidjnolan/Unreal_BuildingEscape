@@ -4,3 +4,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 ## Commits
 * BE01: Setting up GitHub repo
 * BE02: Basic Logging to the Output Log
+* BE03: Accessing an Object's Name
