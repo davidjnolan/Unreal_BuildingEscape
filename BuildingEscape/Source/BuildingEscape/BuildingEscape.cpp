@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright PixelSpawn 2020
 
 #include "BuildingEscape.h"
 #include "Modules/ModuleManager.h"
