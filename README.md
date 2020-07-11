@@ -8,3 +8,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE04: Getting an Actor's Transform
 * BE05: Importing Custom Meshes
 * BE06: Using BSPs
+* BE07: Rotating an Actor with Code
