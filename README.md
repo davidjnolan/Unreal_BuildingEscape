@@ -17,3 +17,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE13: Protecting from a Null Pointer
 * BE14: Getting the Player to open the door
 * BE15: Getting the door to close
+* BE16: Using GetTimeSeconds()
