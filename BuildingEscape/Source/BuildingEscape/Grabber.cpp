@@ -1,8 +1,11 @@
 // Copyright PixelSpawn 2020
 
-
-#include "Grabber.h"
+#include "Engine/World.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/PlayerController.h"
+#include "Grabber.h"
+
+#define OUT
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -29,6 +32,17 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	// Get Player's Viewpoint
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+		);
+	
+	UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
+
+	// Ray-cast out to a certain distance (Reach)
+	// See what ray hits
 }
 

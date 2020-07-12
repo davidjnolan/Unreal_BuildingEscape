@@ -1,8 +1,7 @@
 // Copyright PixelSpawn 2020
 
-
-#include "WorldPosition.h"
 #include "GameFramework/Actor.h"
+#include "WorldPosition.h"
 
 // Sets default values for this component's properties
 UWorldPosition::UWorldPosition()
