@@ -12,3 +12,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE08: Object Collision
 * BE09: Using Linear Interpolation
 * BE10: Exposing Parameters to the Editor
+* BE11: Fixing up Naming Conventions
