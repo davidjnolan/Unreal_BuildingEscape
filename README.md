@@ -14,3 +14,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE10: Exposing Parameters to the Editor
 * BE11: Fixing up Naming Conventions
 * BE12: Using Trigger Volumes
+* BE13: Protecting from a Null Pointer
