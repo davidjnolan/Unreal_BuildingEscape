@@ -10,3 +10,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE06: Using BSPs
 * BE07: Rotating an Actor with Code
 * BE08: Object Collision
+* BE09: Using Linear Interpolation
