@@ -42,11 +42,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		OUT PlayerViewPointRotation
 	);
 	
-	//UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
-
 	// Draw a line from player showing the reach
 	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
-
 	DrawDebugLine(
 		GetWorld(),					// World
 		PlayerViewPointLocation,	// Start Location
@@ -59,6 +56,22 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	);
 
 	// Ray-cast out to a certain distance (Reach)
+	FHitResult Hit;
+	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner()); 	// Tags to check, whether we want complex tags, Actors to ignore
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT Hit,															// Hit result Out Param
+		PlayerViewPointLocation,											// Trace Start Location
+		LineTraceEnd,														// Trace End Location
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),	// Collision Object query - what type of object do we want to hit? - PhysicsBody in this case
+		TraceParams															// Trace Parameters (see above)
+	);
+	
 	// See what ray hits
+	AActor* ActorHit = Hit.GetActor();
+	if (ActorHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Line trace has hit: %s"), *ActorHit->GetName());
+	}
+	
 }
 
