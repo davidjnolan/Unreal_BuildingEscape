@@ -9,6 +9,7 @@
 
 #define OUT
 
+
 // Sets default values for this component's properties
 UGrabber::UGrabber()
 {
@@ -25,7 +26,16 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("Grabber on %s Reporting for Duty!"), *GetOwner()->GetName());
+	//Checking for Physics Handle Component
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle)
+	{	
+		// Physics Handle Found - no action required
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("No Physics Handle found on %s"), *GetOwner()->GetName());
+	}
 }
 
 
