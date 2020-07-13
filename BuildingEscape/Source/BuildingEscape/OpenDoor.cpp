@@ -1,9 +1,9 @@
 // Copyright PixelSpawn 2020
 
+#include "OpenDoor.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
-#include "OpenDoor.h"
 
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()

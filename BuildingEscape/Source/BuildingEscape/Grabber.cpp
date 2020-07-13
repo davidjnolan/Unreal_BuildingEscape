@@ -1,9 +1,11 @@
 // Copyright PixelSpawn 2020
 
+#include "Grabber.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
-#include "Grabber.h"
+#include "Math/Color.h"
 
 #define OUT
 
@@ -38,9 +40,23 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		OUT PlayerViewPointLocation,
 		OUT PlayerViewPointRotation
-		);
+	);
 	
-	UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Location: %s, Rotation %s"), *PlayerViewPointLocation.ToString(), *PlayerViewPointRotation.ToString());
+
+	// Draw a line from player showing the reach
+	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
+
+	DrawDebugLine(
+		GetWorld(),					// World
+		PlayerViewPointLocation,	// Start Location
+		LineTraceEnd,				// End Location
+		FColor(255, 0, 0),			// Color (red)
+		false,						// Line Persistence (false - redraws on every frame)
+		-0.f,						// Line Lifetime (0 - redraws on every frame)
+		0,							// Depth priority (apparently this doesn't work correctly)
+		2.f							// Line thickness
+	);
 
 	// Ray-cast out to a certain distance (Reach)
 	// See what ray hits
