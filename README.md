@@ -24,3 +24,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE20: Ray-Casting
 * BE21: Using FindComponentByClass()
 * BE22: Introducing Input Binding
+* BE23: Refactoring Code in TickComponent()
