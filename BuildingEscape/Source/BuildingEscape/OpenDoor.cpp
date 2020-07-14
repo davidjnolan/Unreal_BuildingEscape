@@ -1,6 +1,7 @@
 // Copyright PixelSpawn 2020
 
 #include "OpenDoor.h"
+#include "Components/AudioComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Actor.h"
@@ -20,15 +21,12 @@ UOpenDoor::UOpenDoor()
 void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
+	FindAudioComponent();
+	CheckPressurePlate();
+	
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
 	OpenAngle += InitialYaw;
-	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
-
-	if(!PressurePlate)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s has the OpenDoor component on it, but no Pressure Plate set!"), *GetOwner()->GetName());
-	}
 }
 
 // Called every frame
@@ -57,6 +55,15 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	DoorRotation.Yaw = CurrentYaw;
 	GetOwner()->SetActorRotation(DoorRotation);
+
+	CloseAudioPlayed = false;
+	if (!AudioComponent){return;}
+	if (!OpenAudioPlayed)
+	{
+		AudioComponent->Play(0.f);
+		OpenAudioPlayed = true;
+	}
+	
 }
 
 void UOpenDoor::CloseDoor(float DeltaTime)
@@ -65,6 +72,14 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	DoorRotation.Yaw = CurrentYaw;
 	GetOwner()->SetActorRotation(DoorRotation);
+
+	OpenAudioPlayed = false;
+	if (!AudioComponent){return;}
+	if (!CloseAudioPlayed)
+	{
+		AudioComponent->Play(0.f);
+		CloseAudioPlayed = true;
+	}
 }
 
 float UOpenDoor::TotalMassOfActors() const
@@ -73,6 +88,7 @@ float UOpenDoor::TotalMassOfActors() const
 
 	// Find all overlapping Actors
 	TArray<AActor*> OverlappingActors;
+	if (!PressurePlate){return TotalMass;} // Protecting against a nullptr
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 
 	// Add up their masses
@@ -81,4 +97,21 @@ float UOpenDoor::TotalMassOfActors() const
 		TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
 	}
 	return TotalMass;
+}
+
+void UOpenDoor::FindAudioComponent()
+{
+	AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+	if (!AudioComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Audio Component missing on %s"), *GetOwner()->GetName());
+	}	
+}
+
+void UOpenDoor::CheckPressurePlate()
+{
+	if(!PressurePlate)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s has the OpenDoor component on it, but no Pressure Plate set!"), *GetOwner()->GetName());
+	}
 }

@@ -28,3 +28,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE24: Using Physics Handles
 * BE25: Refactor
 * BE26: Getting an Actor's Mass
+* BE27: Adding Audio

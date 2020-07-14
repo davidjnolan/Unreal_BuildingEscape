@@ -31,6 +31,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	GetPlayerViewpoint();
+	if (!PhysicsHandle){return;} // Protecting against a nullptr
 	if (PhysicsHandle->GrabbedComponent) // if Physics handle is attached
 	{
 		PhysicsHandle->SetTargetLocation(LineTraceEnd); // Move the object we are holding (lock to end of reach)
@@ -41,7 +42,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 void UGrabber::FindPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle == nullptr)
+	if (!PhysicsHandle)
 	{	
 		UE_LOG(LogTemp, Error, TEXT("No Physics Handle found on %s"), *GetOwner()->GetName());
 	}
@@ -83,8 +84,10 @@ void UGrabber::Grab()
 {
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
-	if (HitResult.GetActor())
+	AActor* ActorHit = HitResult.GetActor();
+	if (ActorHit)
 	{
+		if(!PhysicsHandle){return;} // Protecting against a nullptr
 		PhysicsHandle->GrabComponentAtLocation(
 			ComponentToGrab,
 			NAME_None,
@@ -96,6 +99,7 @@ void UGrabber::Grab()
 // Releases Physics Handle
 void UGrabber::Release()
 {
+	if (!PhysicsHandle){return;} // Protecting against a nullptr
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();

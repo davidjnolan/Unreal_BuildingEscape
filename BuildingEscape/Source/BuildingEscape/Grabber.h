@@ -38,7 +38,9 @@ private:
 	
 	
 // Member Variables
+	UPROPERTY()
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UPROPERTY()
 	UInputComponent* InputComponent = nullptr;
 
 	FVector PlayerViewPointLocation;
@@ -46,7 +48,7 @@ private:
 	FVector LineTraceEnd;
 
 	UPROPERTY(EditAnywhere)
-	float Reach = 100.f;
+	float Reach = 150.f;
 
 	UPROPERTY(EditAnywhere, DisplayName="Enable Debug")
 	bool EnableDebug = false;
