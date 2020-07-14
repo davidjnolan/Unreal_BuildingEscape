@@ -22,10 +22,6 @@ void UPressurePlateDepress::BeginPlay()
 	Super::BeginPlay();
 	CheckPressurePlateVolume();
 	CheckMesh();
-
-	InitialPosition = Mesh->GetComponentLocation().Z;
-	CurrentPosition = InitialPosition;
-	TargetPosition += InitialPosition;
 }
 
 
@@ -34,10 +30,16 @@ void UPressurePlateDepress::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PressurePlateVolume) // && TotalMassOfActors() > MassToOpenDoor)
+
+	
+	
+	if (PressurePlateVolume && TotalMassOfActors() > MassToOpenDoor)
 	{
 		LowerPressurePlate(DeltaTime);
+	}
+		
 }
+
 
 void UPressurePlateDepress::CheckPressurePlateVolume()
 {
@@ -64,13 +66,41 @@ void UPressurePlateDepress::CheckMesh()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s SM found on %s"), *Mesh->GetName(), *GetOwner()->GetName());
+		InitialPosition = Mesh->GetComponentLocation().Z;
+		CurrentPosition = InitialPosition;
+		TargetPosition += InitialPosition;
+
+		
 	}	
+
+	
 }
 
-void UPressurePlateDepress::RaisePressurePlate(float DeltaTime)
+void UPressurePlateDepress::LowerPressurePlate(float DeltaTime)
 {
-	CurrentPosition = (FMath::FInterpTo(CurrentPosition, InitialPosition, DeltaTime, PressurePlateSpeed));
-	FRotator DoorRotation = GetOwner()->GetActorRotation();
-	DoorRotation.Yaw = CurrentYaw;
-	GetOwner()->SetActorRotation(DoorRotation);
+	CurrentPosition = (FMath::FInterpTo(CurrentPosition, TargetPosition, DeltaTime, PressurePlateSpeed));
+	FVector PressurePlatePosition = Mesh->GetComponentLocation();
+	PressurePlatePosition.Z = CurrentPosition;
+	Mesh->SetWorldLocation(PressurePlatePosition);
+
+	UE_LOG(LogTemp, Warning, TEXT("%s current Position: %s"), *Mesh->GetName(), *PressurePlatePosition.ToString());
+}
+
+
+
+float UPressurePlateDepress::TotalMassOfActors() const
+{
+	float TotalMass = 0.f;
+
+	// Find all overlapping Actors
+	TArray<AActor*> OverlappingActors;
+	if (!PressurePlateVolume){return TotalMass;} // Protecting against a nullptr
+	PressurePlateVolume->GetOverlappingActors(OUT OverlappingActors);
+
+	// Add up their masses
+	for (AActor* OverlappingActor : OverlappingActors)
+	{
+		TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+	}
+	return TotalMass;
 }

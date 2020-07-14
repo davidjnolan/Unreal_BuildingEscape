@@ -34,6 +34,9 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// UE_LOG(LogTemp, Warning, TEXT("DeltaTime = %f"), DeltaTime);
+	// UE_LOG(LogTemp, Warning, TEXT("%f, %f, %f"), InitialYaw, CurrentYaw, OpenAngle);
+
 	if (PressurePlateVolume && TotalMassOfActors() > MassToOpenDoor)
 	{
 		OpenDoor(DeltaTime);

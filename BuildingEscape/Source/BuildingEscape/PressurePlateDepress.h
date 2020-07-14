@@ -23,6 +23,7 @@ public:
 	void CheckMesh();
 	void LowerPressurePlate(float DeltaTime);
 	void RaisePressurePlate(float DeltaTime);
+	float TotalMassOfActors() const;
 
 protected:
 	// Called when the game starts
@@ -40,12 +41,12 @@ private:
 	float CurrentPosition;
 
 	UPROPERTY(EditAnywhere)
-	float TargetPosition = -5.f;
+	float TargetPosition = -10.f;
 
 	UPROPERTY(EditAnywhere)
 	float MassToOpenDoor = 60.f;
 
 	UPROPERTY(EditAnywhere)
-	float PressurePlateSpeed = 2.f;
+	float PressurePlateSpeed = 5.f;
 
 };

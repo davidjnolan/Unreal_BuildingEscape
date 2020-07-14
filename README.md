@@ -31,3 +31,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE27: Adding Audio
 * BE28: Adding a new PressurePlate
 * BE29: Restore BuildingEscape Map
+* BE30: Making Pressure Plate depress
