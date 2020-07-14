@@ -30,34 +30,19 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FVector PlayerViewPointLocation;
-		FRotator PlayerViewPointRotation;
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-			OUT PlayerViewPointLocation,
-			OUT PlayerViewPointRotation
-		);
-		
-	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
-
-	// if Physics handle is attached
-	if (PhysicsHandle->GrabbedComponent)
+	GetPlayerViewpoint();
+	if (PhysicsHandle->GrabbedComponent) // if Physics handle is attached
 	{
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(LineTraceEnd); // Move the object we are holding (lock to end of reach)
 	}
-	
-		//Move the object we are holding
 }
 
 //Checking for Physics Handle Component
 void UGrabber::FindPhysicsHandle()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle)
+	if (PhysicsHandle == nullptr)
 	{	
-		// Physics Handle Found - no action required
-	}
-	else
-	{
 		UE_LOG(LogTemp, Error, TEXT("No Physics Handle found on %s"), *GetOwner()->GetName());
 	}
 }
@@ -77,19 +62,25 @@ void UGrabber::SetupInputComponent()
 	}
 }
 
-void UGrabber::Grab()
+// Updates PlayerViewPointLocation, PlayerViewPointRotation and LineTraceEnd with the player's current location
+void UGrabber::GetPlayerViewpoint()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grabber Pressed"));
-
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		OUT PlayerViewPointLocation,
-		OUT PlayerViewPointRotation
+		PlayerViewPointLocation,
+		PlayerViewPointRotation
 	);
 	
-	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
+	LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
 
+	if (EnableDebug)
+	{
+		DrawGrabberDebug();
+	}
+}
+
+// Calls GetFirstPhysicsBodyInReach and attaches a Physics Handle to the component hit by the line trace
+void UGrabber::Grab()
+{
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
 	if (HitResult.GetActor())
@@ -102,30 +93,33 @@ void UGrabber::Grab()
 	}
 }
 
+// Releases Physics Handle
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Grabber Released"));
-
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();
 	}
-	
+}
+
+// Draw debug line previewing Reach line trace
+void UGrabber::DrawGrabberDebug() const
+{
+	DrawDebugLine(
+			GetWorld(),					// World
+			PlayerViewPointLocation,	// Start Location
+			LineTraceEnd,				// End Location
+			FColor(255, 0, 0),			// Color (red)
+			false,						// Line Persistence (false - redraws on every frame)
+			-0.f,						// Line Lifetime (0 - redraws on every frame)
+			0,							// Depth priority (apparently this doesn't work correctly)
+			2.f							// Line thickness
+		);	
 }
 
 // Return the first Actor in reach with physics body
 FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 {
-	// Get Player's Viewpoint
-	FVector PlayerViewPointLocation;
-	FRotator PlayerViewPointRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-		OUT PlayerViewPointLocation,
-		OUT PlayerViewPointRotation
-	);
-	
-	FVector LineTraceEnd = PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
-
 	// Ray-cast out to a certain distance (Reach)
 	FHitResult Hit;
 	FCollisionQueryParams TraceParams(FName(TEXT("")), false, GetOwner()); 	// Tags to check, whether we want complex tags, Actors to ignore
@@ -137,32 +131,10 @@ FHitResult UGrabber::GetFirstPhysicsBodyInReach() const
 		TraceParams															// Trace Parameters (see above)
 	);
 	
-	if (EnableDebug)
-	{
-		GrabberDebug(PlayerViewPointLocation, LineTraceEnd, Hit);
-	}
-
-	return Hit;
-}
-
-
-// Draw debug line previewing Reach line trace and report which actors are hit
-void UGrabber::GrabberDebug(FVector PlayerViewPointLocation, FVector LineTraceEnd, FHitResult Hit) const
-{
-	DrawDebugLine(
-			GetWorld(),					// World
-			PlayerViewPointLocation,	// Start Location
-			LineTraceEnd,				// End Location
-			FColor(255, 0, 0),			// Color (red)
-			false,						// Line Persistence (false - redraws on every frame)
-			-0.f,						// Line Lifetime (0 - redraws on every frame)
-			0,							// Depth priority (apparently this doesn't work correctly)
-			2.f							// Line thickness
-		);
-	
-	// AActor* ActorHit = Hit.GetActor();
-	if (Hit.GetActor())
+	if (EnableDebug && Hit.GetActor())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Line trace has hit: %s"), *Hit.GetActor()->GetName());
 	}
+
+	return Hit;
 }

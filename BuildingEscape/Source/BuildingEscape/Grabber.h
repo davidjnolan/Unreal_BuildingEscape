@@ -26,21 +26,28 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+// Functions
 	void FindPhysicsHandle();
 	void SetupInputComponent();
+	void GetPlayerViewpoint();
 	void Grab();
 	void Release();
-	void GrabberDebug(FVector PlayerViewPointLocation, FVector LineTraceEnd, FHitResult Hit) const;
+	void DrawGrabberDebug() const;
 
 	FHitResult GetFirstPhysicsBodyInReach() const;
 	
-
+	
+// Member Variables
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
+
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	FVector LineTraceEnd;
 
 	UPROPERTY(EditAnywhere)
 	float Reach = 100.f;
 
 	UPROPERTY(EditAnywhere, DisplayName="Enable Debug")
-	bool EnableDebug = true;
+	bool EnableDebug = false;
 };
