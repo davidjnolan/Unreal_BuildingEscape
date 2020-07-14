@@ -27,3 +27,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE23: Refactoring Code in TickComponent()
 * BE24: Using Physics Handles
 * BE25: Refactor
+* BE26: Getting an Actor's Mass

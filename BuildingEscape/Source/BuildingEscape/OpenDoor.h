@@ -24,8 +24,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
+	float TotalMassOfActors() const; 
 
 private:
 
@@ -33,6 +35,9 @@ private:
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 	
+	UPROPERTY(EditAnywhere)
+	float MassToOpenDoor = 60.f;
+
 	UPROPERTY(EditAnywhere)
 	float OpenAngle = 90.f;
 
