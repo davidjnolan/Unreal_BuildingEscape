@@ -26,7 +26,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void FindAudioComponent();
-	void CheckPressurePlate();
+	void CheckPressurePlateVolume();
 
 	void OpenDoor(float DeltaTime);
 	void CloseDoor(float DeltaTime);
@@ -58,7 +58,7 @@ private:
 	float DoorCloseSpeed = 4.f;
 
 	UPROPERTY(EditAnywhere)
-	ATriggerVolume* PressurePlate = nullptr;
+	ATriggerVolume* PressurePlateVolume = nullptr;
 
 	UPROPERTY()
 	UAudioComponent* AudioComponent = nullptr;

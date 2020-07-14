@@ -22,7 +22,7 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 	FindAudioComponent();
-	CheckPressurePlate();
+	CheckPressurePlateVolume();
 	
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
@@ -34,7 +34,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PressurePlate && TotalMassOfActors() > MassToOpenDoor)
+	if (PressurePlateVolume && TotalMassOfActors() > MassToOpenDoor)
 	{
 		OpenDoor(DeltaTime);
 		DoorLastOpened = GetWorld()->GetTimeSeconds();
@@ -88,8 +88,8 @@ float UOpenDoor::TotalMassOfActors() const
 
 	// Find all overlapping Actors
 	TArray<AActor*> OverlappingActors;
-	if (!PressurePlate){return TotalMass;} // Protecting against a nullptr
-	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
+	if (!PressurePlateVolume){return TotalMass;} // Protecting against a nullptr
+	PressurePlateVolume->GetOverlappingActors(OUT OverlappingActors);
 
 	// Add up their masses
 	for (AActor* OverlappingActor : OverlappingActors)
@@ -108,9 +108,9 @@ void UOpenDoor::FindAudioComponent()
 	}	
 }
 
-void UOpenDoor::CheckPressurePlate()
+void UOpenDoor::CheckPressurePlateVolume()
 {
-	if(!PressurePlate)
+	if(!PressurePlateVolume)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s has the OpenDoor component on it, but no Pressure Plate set!"), *GetOwner()->GetName());
 	}
