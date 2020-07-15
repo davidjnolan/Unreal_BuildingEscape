@@ -58,6 +58,9 @@ private:
 	float DoorCloseSpeed = 4.f;
 
 	UPROPERTY(EditAnywhere)
+	bool WillClose = true;
+
+	UPROPERTY(EditAnywhere)
 	ATriggerVolume* PressurePlateVolume = nullptr;
 
 	UPROPERTY()

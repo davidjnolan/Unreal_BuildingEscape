@@ -39,6 +39,7 @@ private:
 
 	float InitialPosition;
 	float CurrentPosition;
+	float PressurePlateLastDepressed = 0.f;
 
 	UPROPERTY(EditAnywhere)
 	float TargetPosition = -10.f;
@@ -47,6 +48,12 @@ private:
 	float MassToOpenDoor = 60.f;
 
 	UPROPERTY(EditAnywhere)
-	float PressurePlateSpeed = 5.f;
+	float PressurePlateSpeed = 10.f;
+
+	UPROPERTY(EditAnywhere)
+	bool WillRaise = true;
+
+	UPROPERTY(EditAnywhere)
+	float PressurePlateRaiseDelay = 0.f;
 
 };

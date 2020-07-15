@@ -15,7 +15,6 @@ UPressurePlateDepress::UPressurePlateDepress()
 	// ...
 }
 
-
 // Called when the game starts
 void UPressurePlateDepress::BeginPlay()
 {
@@ -24,20 +23,23 @@ void UPressurePlateDepress::BeginPlay()
 	CheckMesh();
 }
 
-
 // Called every frame
 void UPressurePlateDepress::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-
-	
-	
 	if (PressurePlateVolume && TotalMassOfActors() > MassToOpenDoor)
 	{
 		LowerPressurePlate(DeltaTime);
 	}
-		
+	else
+	{
+		if (GetWorld()->GetTimeSeconds() - PressurePlateLastDepressed > PressurePlateRaiseDelay)
+		{
+			RaisePressurePlate(DeltaTime);
+		}
+	}
+	GetWorld()->GetTimeSeconds();
 }
 
 
@@ -69,15 +71,12 @@ void UPressurePlateDepress::CheckMesh()
 		InitialPosition = Mesh->GetComponentLocation().Z;
 		CurrentPosition = InitialPosition;
 		TargetPosition += InitialPosition;
-
-		
 	}	
-
-	
 }
 
 void UPressurePlateDepress::LowerPressurePlate(float DeltaTime)
 {
+	if (!Mesh) {return;}
 	CurrentPosition = (FMath::FInterpTo(CurrentPosition, TargetPosition, DeltaTime, PressurePlateSpeed));
 	FVector PressurePlatePosition = Mesh->GetComponentLocation();
 	PressurePlatePosition.Z = CurrentPosition;
@@ -86,7 +85,17 @@ void UPressurePlateDepress::LowerPressurePlate(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("%s current Position: %s"), *Mesh->GetName(), *PressurePlatePosition.ToString());
 }
 
+void UPressurePlateDepress::RaisePressurePlate(float DeltaTime)
+{
+	if (!WillRaise) {return;}
+	if (!Mesh) {return;}
+	CurrentPosition = (FMath::FInterpTo(CurrentPosition, InitialPosition, DeltaTime, PressurePlateSpeed));
+	FVector PressurePlatePosition = Mesh->GetComponentLocation();
+	PressurePlatePosition.Z = CurrentPosition;
+	Mesh->SetWorldLocation(PressurePlatePosition);
 
+	UE_LOG(LogTemp, Warning, TEXT("%s current Position: %s"), *Mesh->GetName(), *PressurePlatePosition.ToString());
+}
 
 float UPressurePlateDepress::TotalMassOfActors() const
 {

@@ -71,6 +71,7 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
+	if (!WillClose) {return;}
 	CurrentYaw = (FMath::FInterpTo(CurrentYaw, InitialYaw, DeltaTime, DoorCloseSpeed));
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	DoorRotation.Yaw = CurrentYaw;
