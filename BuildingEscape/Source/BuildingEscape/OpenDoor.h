@@ -38,6 +38,11 @@ private:
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 
+	float InitialPosition;
+	float CurrentPosition;
+	UPROPERTY(EditAnywhere)
+	float TargetPosition = -10.f;
+
 	// Tracks whether the sound has been played
 	bool OpenAudioPlayed = false;
 	bool CloseAudioPlayed = true;

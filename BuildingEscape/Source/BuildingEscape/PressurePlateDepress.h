@@ -21,6 +21,7 @@ public:
 
 	void CheckPressurePlateVolume();
 	void CheckMesh();
+	void FindAudioComponent();
 	void LowerPressurePlate(float DeltaTime);
 	void RaisePressurePlate(float DeltaTime);
 	float TotalMassOfActors() const;
@@ -37,12 +38,17 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* Mesh = nullptr;
 
+	UPROPERTY()
+	UAudioComponent* AudioComponent = nullptr;
+
 	float InitialPosition;
 	float CurrentPosition;
-	float PressurePlateLastDepressed = 0.f;
-
 	UPROPERTY(EditAnywhere)
 	float TargetPosition = -10.f;
+
+
+	float PressurePlateLastDepressed = 0.f;
+
 
 	UPROPERTY(EditAnywhere)
 	float MassToOpenDoor = 60.f;
@@ -56,4 +62,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	float PressurePlateRaiseDelay = 0.f;
 
+
+	// Tracks whether the sound has been played
+	bool LowerAudioPlayed = false;
+	bool RaiseAudioPlayed = true;
 };

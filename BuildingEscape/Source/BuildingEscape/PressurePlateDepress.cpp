@@ -2,6 +2,7 @@
 
 
 #include "PressurePlateDepress.h"
+#include "Components/AudioComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/Actor.h"
 
@@ -21,6 +22,7 @@ void UPressurePlateDepress::BeginPlay()
 	Super::BeginPlay();
 	CheckPressurePlateVolume();
 	CheckMesh();
+	FindAudioComponent();
 }
 
 // Called every frame
@@ -82,7 +84,13 @@ void UPressurePlateDepress::LowerPressurePlate(float DeltaTime)
 	PressurePlatePosition.Z = CurrentPosition;
 	Mesh->SetWorldLocation(PressurePlatePosition);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s current Position: %s"), *Mesh->GetName(), *PressurePlatePosition.ToString());
+	RaiseAudioPlayed = false;
+	if (!AudioComponent){return;}
+	if (!LowerAudioPlayed)
+	{
+		AudioComponent->Play(0.f);
+		LowerAudioPlayed = true;
+	}
 }
 
 void UPressurePlateDepress::RaisePressurePlate(float DeltaTime)
@@ -94,7 +102,14 @@ void UPressurePlateDepress::RaisePressurePlate(float DeltaTime)
 	PressurePlatePosition.Z = CurrentPosition;
 	Mesh->SetWorldLocation(PressurePlatePosition);
 
-	UE_LOG(LogTemp, Warning, TEXT("%s current Position: %s"), *Mesh->GetName(), *PressurePlatePosition.ToString());
+	LowerAudioPlayed = false;
+	if (!AudioComponent){return;}
+	if (!RaiseAudioPlayed)
+	{
+		AudioComponent->Play(0.f);
+
+		RaiseAudioPlayed = true;
+	}
 }
 
 float UPressurePlateDepress::TotalMassOfActors() const
@@ -109,7 +124,28 @@ float UPressurePlateDepress::TotalMassOfActors() const
 	// Add up their masses
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		if (OverlappingActor->GetName().Contains("PressurePlate"))
+		{
+			continue; // ignore PressurePlate in mass calculation
+		}
+		else
+		{
+			TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		}
 	}
 	return TotalMass;
+}
+
+void UPressurePlateDepress::FindAudioComponent()
+{
+	AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+	if (!AudioComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Audio Component missing on %s"), *GetOwner()->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Audio Component found on %s"), *GetOwner()->GetName());
+	}
+	
 }

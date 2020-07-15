@@ -24,9 +24,13 @@ void UOpenDoor::BeginPlay()
 	FindAudioComponent();
 	CheckPressurePlateVolume();
 	
-	InitialYaw = GetOwner()->GetActorRotation().Yaw;
+	InitialYaw = GetOwner()->GetActorLocation().Z;
 	CurrentYaw = InitialYaw;
 	OpenAngle += InitialYaw;
+	InitialPosition = GetOwner()->GetActorLocation().Z;
+	CurrentPosition = InitialPosition;
+	TargetPosition += InitialPosition;
+	
 }
 
 // Called every frame
@@ -54,10 +58,10 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
-	CurrentYaw = (FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, DoorOpenSpeed));
-	FRotator DoorRotation = GetOwner()->GetActorRotation();
-	DoorRotation.Yaw = CurrentYaw;
-	GetOwner()->SetActorRotation(DoorRotation);
+	CurrentPosition = (FMath::FInterpTo(CurrentPosition, TargetPosition, DeltaTime, DoorOpenSpeed));
+	FVector DoorPosition = GetOwner()->GetActorLocation();
+	DoorPosition.Z = CurrentPosition;
+	GetOwner()->SetActorLocation(DoorPosition);
 
 	CloseAudioPlayed = false;
 	if (!AudioComponent){return;}
@@ -72,10 +76,11 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
 	if (!WillClose) {return;}
-	CurrentYaw = (FMath::FInterpTo(CurrentYaw, InitialYaw, DeltaTime, DoorCloseSpeed));
-	FRotator DoorRotation = GetOwner()->GetActorRotation();
-	DoorRotation.Yaw = CurrentYaw;
-	GetOwner()->SetActorRotation(DoorRotation);
+
+	CurrentPosition = (FMath::FInterpTo(CurrentPosition, InitialPosition, DeltaTime, DoorCloseSpeed));
+	FVector DoorPosition = GetOwner()->GetActorLocation();
+	DoorPosition.Z = CurrentPosition;
+	GetOwner()->SetActorLocation(DoorPosition);
 
 	OpenAudioPlayed = false;
 	if (!AudioComponent){return;}
@@ -98,7 +103,14 @@ float UOpenDoor::TotalMassOfActors() const
 	// Add up their masses
 	for (AActor* OverlappingActor : OverlappingActors)
 	{
-		TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		if (OverlappingActor->GetName().Contains("PressurePlate"))
+		{
+			continue; // ignore PressurePlate in mass calculation
+		}
+		else
+		{
+			TotalMass += OverlappingActor->FindComponentByClass<UPrimitiveComponent>()->GetMass();
+		}
 	}
 	return TotalMass;
 }
