@@ -36,3 +36,4 @@ A simple first person puzzle game - Developed using UE4 - Based on a GameDev.TV 
 * BE32: Added sound to PressurePlate
 * BE33: Building the first room
 * BE34: Setting up corridor lighting
+* BE35: Working up the environment
